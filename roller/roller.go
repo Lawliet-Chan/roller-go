@@ -145,12 +145,12 @@ func (r *Roller) Close() {
 }
 
 func (r *Roller) persistTrace(byt []byte) error {
-	var msg *types.Msg
+	var msg = &types.Msg{}
 	err := json.Unmarshal(byt, msg)
 	if err != nil {
 		return err
 	}
-	var traces *types.BlockTraces
+	var traces = &types.BlockTraces{}
 	err = json.Unmarshal(msg.Payload, traces)
 	if err != nil {
 		return err

@@ -19,7 +19,13 @@ func NewStack(path string) *Stack {
 	if err != nil {
 		log.Crit("cannot open kvdb for stack", "error", err)
 	}
-
+	err = kvdb.Update(func(tx *bbolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists(bucket)
+		return err
+	})
+	if err != nil {
+		log.Crit("init stack failed", "error", err)
+	}
 	return &Stack{kvdb: kvdb}
 }
 
@@ -47,7 +53,7 @@ func (s *Stack) Pop() (*types.BlockTraces, error) {
 	if err != nil {
 		return nil, err
 	}
-	var traces *types.BlockTraces
+	var traces = &types.BlockTraces{}
 	err = json.Unmarshal(value, traces)
 	return traces, err
 }

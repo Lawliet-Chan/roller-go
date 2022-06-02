@@ -45,6 +45,7 @@ func (p *Prover) getZkProof() (proof *types.ZkProof, err error) {
 	if err != nil {
 		return
 	}
+	proof = &types.ZkProof{}
 	err = json.Unmarshal(proofByt, proof)
 	return
 }
