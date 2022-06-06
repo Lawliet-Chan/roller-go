@@ -6,12 +6,12 @@ import (
 )
 
 type Config struct {
-	RollerName   string
-	Secret       []byte
-	ScrollUrl    string
-	ProverPath   string
-	StackPath    string
-	WsTimeoutSec int
+	RollerName   string `toml:"roller_name"`
+	Secret       []byte `toml:"secret"`
+	ScrollUrl    string `toml:"scroll_url"`
+	ProverPath   string `toml:"prover_path"`
+	StackPath    string `toml:"stack_path"`
+	WsTimeoutSec int    `toml:"ws_timeout_sec"`
 }
 
 func InitConfig(path string) *Config {
