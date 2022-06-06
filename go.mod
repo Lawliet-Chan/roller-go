@@ -1,4 +1,4 @@
-module roller-go
+module github.com/Lawliet-Chan/roller-go
 
 go 1.17
 

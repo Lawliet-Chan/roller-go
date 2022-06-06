@@ -1,8 +1,8 @@
 package main
 
 import (
-	"roller-go/config"
-	"roller-go/roller"
+	"github.com/Lawliet-Chan/roller-go/config"
+	"github.com/Lawliet-Chan/roller-go/roller"
 )
 
 func main() {

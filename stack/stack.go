@@ -3,9 +3,9 @@ package stack
 import (
 	"encoding/binary"
 	"encoding/json"
+	"github.com/Lawliet-Chan/roller-go/types"
 	"github.com/scroll-tech/go-ethereum/log"
 	"go.etcd.io/bbolt"
-	"roller-go/types"
 )
 
 type Stack struct {

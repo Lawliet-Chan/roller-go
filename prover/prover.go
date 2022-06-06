@@ -3,9 +3,9 @@ package prover
 import (
 	"encoding/binary"
 	"encoding/json"
+	"github.com/Lawliet-Chan/roller-go/types"
 	"github.com/scroll-tech/go-ethereum/log"
 	"net"
-	"roller-go/types"
 )
 
 type Prover struct {

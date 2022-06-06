@@ -1,8 +1,8 @@
 package stack
 
 import (
+	"github.com/Lawliet-Chan/roller-go/types"
 	"github.com/stretchr/testify/assert"
-	"roller-go/types"
 	"testing"
 )
 
