@@ -26,7 +26,7 @@ func main() {
 	go mockIpcProver(cfg.ProverPath)
 	go mockScroll()
 	r := roller.NewRoller(cfg)
-	r.Run()
+	go r.Run()
 	defer r.Close()
 }
 

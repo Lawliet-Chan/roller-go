@@ -85,6 +85,7 @@ func (r *Roller) HandleScroll() {
 				panic(err)
 			}
 			log.Error("handle scroll failed", "error", err)
+			return
 		}
 	}
 }
