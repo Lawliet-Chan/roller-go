@@ -9,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/gorilla/websocket"
 	"github.com/scroll-tech/go-ethereum/common"
-	"github.com/scroll-tech/go-ethereum/log"
 	"net"
 	"net/http"
 	"os"
@@ -19,7 +18,7 @@ import (
 func main() {
 	cfg := &config.Config{
 		RollerName:       "my-roller",
-		Secret:           nil,
+		SecretKey:        "dcf2cbdd171a21c480aa7f53d77f31bb102282b3ff099c78e3118b37348c72f7",
 		ScrollUrl:        "ws://localhost:9000",
 		ProverSocketPath: "/tmp/prover.sock",
 		StackPath:        "stack",
@@ -73,7 +72,7 @@ func mockScroll() {
 		if !secp256k1.VerifySignature(common.FromHex(authMsg.Identity.PublicKey), hash, common.FromHex(authMsg.Signature)[:64]) {
 			panic("verify signer failed: " + err.Error())
 		}
-		log.Info("signature verification successful", "roller name", authMsg.Identity.Name)
+		println("signature verification successful. Roller: ", authMsg.Identity.Name)
 
 		traces := &types.BlockTraces{
 			ID:     1,

@@ -1,15 +1,17 @@
 package roller
 
 import (
+	"crypto/elliptic"
 	"encoding/json"
 	"github.com/Lawliet-Chan/roller-go/config"
 	"github.com/Lawliet-Chan/roller-go/prover"
 	"github.com/Lawliet-Chan/roller-go/stack"
 	"github.com/Lawliet-Chan/roller-go/types"
+	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/gorilla/websocket"
 	"github.com/scroll-tech/go-ethereum/common"
+	"github.com/scroll-tech/go-ethereum/crypto"
 	"github.com/scroll-tech/go-ethereum/log"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"net"
 	"time"
 )
@@ -45,8 +47,7 @@ func (r *Roller) Run() {
 }
 
 func (r *Roller) Register() error {
-	prvkey := secp256k1.GenPrivKeySecp256k1(r.cfg.Secret)
-	pubkey := prvkey.PubKey().Bytes()
+	pubkey, prvkey := generateKeyPair(common.FromHex(r.cfg.SecretKey))
 	authMsg := &types.AuthMessage{
 		Identity: types.Identity{
 			Name:      "testRoller",
@@ -61,7 +62,7 @@ func (r *Roller) Register() error {
 		return err
 	}
 
-	sig, err := prvkey.Sign(hash)
+	sig, err := secp256k1.Sign(hash, prvkey)
 	if err != nil {
 		return err
 	}
@@ -173,4 +174,17 @@ func MakeMsgByt(msgTyp types.Type, payloadVal interface{}) ([]byte, error) {
 		Payload: payload,
 	}
 	return json.Marshal(msg)
+}
+
+func generateKeyPair(secretKey []byte) (pubkey, privkey []byte) {
+	priv, err := crypto.ToECDSA(secretKey)
+	if err != nil {
+		log.Crit("generate private-key failed", "error", err)
+	}
+	pubkey = elliptic.Marshal(secp256k1.S256(), priv.X, priv.Y)
+
+	privkey = make([]byte, 32)
+	blob := priv.D.Bytes()
+	copy(privkey[32-len(blob):], blob)
+	return
 }

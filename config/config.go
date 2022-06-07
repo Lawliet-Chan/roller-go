@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	RollerName       string `toml:"roller_name"`
-	Secret           []byte `toml:"secret"`
+	SecretKey        string `toml:"secret_key"`
 	ScrollUrl        string `toml:"scroll_url"`
 	ProverSocketPath string `toml:"prover_socket_path"`
 	StackPath        string `toml:"stack_path"`

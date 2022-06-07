@@ -1,5 +1,5 @@
 roller_name = "my_roller"
-secret = "my_secret"
+secret_key = "dcf2cbdd171a21c480aa7f53d77f31bb102282b3ff099c78e3118b37348c72f7"
 scroll_url = "ws://localhost:9000"
 prover_path = "/tmp/prove.sock"
 stack_path = "stack"
