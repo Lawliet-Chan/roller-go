@@ -67,7 +67,7 @@ func (r *Roller) Register() error {
 	}
 	authMsg.Signature = common.Bytes2Hex(sig)
 
-	msgByt, err := makeMsgByt(types.Register, authMsg)
+	msgByt, err := MakeMsgByt(types.Register, authMsg)
 	if err != nil {
 		return err
 	}
@@ -133,7 +133,7 @@ func (r *Roller) prove() error {
 	if err != nil {
 		return err
 	}
-	msgByt, err := makeMsgByt(types.Proof, proof)
+	msgByt, err := MakeMsgByt(types.Proof, proof)
 	if err != nil {
 		return err
 	}
@@ -150,6 +150,10 @@ func (r *Roller) persistTrace(byt []byte) error {
 	if err != nil {
 		return err
 	}
+	if msg.Type != types.BlockTrace {
+		log.Error("message from Scroll illegal", "error", err)
+		return nil
+	}
 	var traces = &types.BlockTraces{}
 	err = json.Unmarshal(msg.Payload, traces)
 	if err != nil {
@@ -158,7 +162,7 @@ func (r *Roller) persistTrace(byt []byte) error {
 	return r.stack.Append(traces)
 }
 
-func makeMsgByt(msgTyp types.Type, payloadVal interface{}) ([]byte, error) {
+func MakeMsgByt(msgTyp types.Type, payloadVal interface{}) ([]byte, error) {
 	payload, err := json.Marshal(payloadVal)
 	if err != nil {
 		return nil, err
