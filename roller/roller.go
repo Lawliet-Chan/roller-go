@@ -31,7 +31,7 @@ func NewRoller(cfg *config.Config) *Roller {
 		cfg:    cfg,
 		conn:   conn,
 		stack:  stack.NewStack(cfg.StackPath),
-		prover: prover.NewProver(cfg.ProverPath),
+		prover: prover.NewProver(cfg.ProverSocketPath),
 	}
 }
 

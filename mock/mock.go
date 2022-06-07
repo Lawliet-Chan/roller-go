@@ -12,22 +12,28 @@ import (
 	"github.com/scroll-tech/go-ethereum/log"
 	"net"
 	"net/http"
+	"os"
+	"time"
 )
 
 func main() {
 	cfg := &config.Config{
-		RollerName:   "my-roller",
-		Secret:       nil,
-		ScrollUrl:    "ws://localhost:9000",
-		ProverPath:   "/tmp/prover.sock",
-		StackPath:    "stack",
-		WsTimeoutSec: 10,
+		RollerName:       "my-roller",
+		Secret:           nil,
+		ScrollUrl:        "ws://localhost:9000",
+		ProverSocketPath: "/tmp/prover.sock",
+		StackPath:        "stack",
+		WsTimeoutSec:     10,
 	}
-	go mockIpcProver(cfg.ProverPath)
+	go mockIpcProver(cfg.ProverSocketPath)
 	go mockScroll()
 	r := roller.NewRoller(cfg)
 	go r.Run()
-	defer r.Close()
+	time.Sleep(2 * time.Second)
+	defer func() {
+		_ = os.Remove(cfg.ProverSocketPath)
+		r.Close()
+	}()
 }
 
 func mockScroll() {
