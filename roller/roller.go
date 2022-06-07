@@ -50,7 +50,7 @@ func (r *Roller) Register() error {
 	pubkey, prvkey := generateKeyPair(common.FromHex(r.cfg.SecretKey))
 	authMsg := &types.AuthMessage{
 		Identity: types.Identity{
-			Name:      "testRoller",
+			Name:      r.cfg.RollerName,
 			Timestamp: time.Now().UnixMilli(),
 			PublicKey: common.Bytes2Hex(pubkey),
 		},
