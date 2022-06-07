@@ -161,6 +161,7 @@ func (r *Roller) persistTrace(byt []byte) error {
 	if err != nil {
 		return err
 	}
+	log.Info("Accept BlockTrace from Scroll", "ID", traces.ID)
 	return r.stack.Append(traces)
 }
 

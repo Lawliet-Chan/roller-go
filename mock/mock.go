@@ -75,7 +75,7 @@ func mockScroll() {
 		println("signature verification successful. Roller: ", authMsg.Identity.Name)
 
 		traces := &types.BlockTraces{
-			ID:     1,
+			ID:     16,
 			Traces: nil,
 		}
 		msgByt, err := roller.MakeMsgByt(types.BlockTrace, traces)
