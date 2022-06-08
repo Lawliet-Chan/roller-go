@@ -1,4 +1,4 @@
-package main
+package mock
 
 import (
 	"encoding/binary"
@@ -12,10 +12,11 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"testing"
 	"time"
 )
 
-func main() {
+func TestRoller(t *testing.T) {
 	cfg := &config.Config{
 		RollerName:       "my-roller",
 		SecretKey:        "dcf2cbdd171a21c480aa7f53d77f31bb102282b3ff099c78e3118b37348c72f7",
@@ -24,8 +25,8 @@ func main() {
 		StackPath:        "stack",
 		WsTimeoutSec:     10,
 	}
-	go mockIpcProver(cfg.ProverSocketPath)
-	go mockScroll()
+	go mockIpcProver(t, cfg.ProverSocketPath)
+	go mockScroll(t)
 	r := roller.NewRoller(cfg)
 	go r.Run()
 	time.Sleep(2 * time.Second)
@@ -35,12 +36,12 @@ func main() {
 	}()
 }
 
-func mockScroll() {
+func mockScroll(t *testing.T) {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		up := websocket.Upgrader{}
 		c, err := up.Upgrade(w, req, nil)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		payload, err := func(c *websocket.Conn) ([]byte, error) {
 			for {
@@ -57,20 +58,20 @@ func mockScroll() {
 
 		msg := &types.Msg{}
 		if err = json.Unmarshal(payload, msg); err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		authMsg := &types.AuthMessage{}
 		if err := json.Unmarshal(msg.Payload, authMsg); err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 
 		// Verify signature
 		hash, err := authMsg.Identity.Hash()
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		if !secp256k1.VerifySignature(common.FromHex(authMsg.Identity.PublicKey), hash, common.FromHex(authMsg.Signature)[:64]) {
-			panic("verify signer failed: " + err.Error())
+			t.Fatal("verify signer failed: " + err.Error())
 		}
 		println("signature verification successful. Roller: ", authMsg.Identity.Name)
 
@@ -80,36 +81,36 @@ func mockScroll() {
 		}
 		msgByt, err := roller.MakeMsgByt(types.BlockTrace, traces)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		err = c.WriteMessage(websocket.BinaryMessage, msgByt)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 	})
 	http.ListenAndServe(":9000", nil)
 }
 
-func mockIpcProver(socket string) {
+func mockIpcProver(t *testing.T, socket string) {
 	lis, err := net.Listen("unix", socket)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	for {
 		conn, err := lis.Accept()
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		buf := make([]byte, 4)
 		_, err = conn.Read(buf)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		bytesLen := binary.BigEndian.Uint32(buf)
 		jsonBuf := make([]byte, bytesLen)
 		_, err = conn.Read(jsonBuf)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 
 		zkproof := &types.ZkProof{
@@ -119,7 +120,7 @@ func mockIpcProver(socket string) {
 		}
 		proofByt, err := json.Marshal(zkproof)
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		length := uint32(len(proofByt))
 		lenByt := make([]byte, 4)
@@ -127,7 +128,7 @@ func mockIpcProver(socket string) {
 
 		_, err = conn.Write(append(lenByt, proofByt...))
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 	}
 }

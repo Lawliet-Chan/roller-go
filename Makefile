@@ -1,6 +1,6 @@
 .PHONY: lint docker clean roller
 
-IMAGE_NAME=roller
+IMAGE_NAME=roller-go
 IMAGE_VERSION=latest
 
 roller: ## Builds the Roller instance.
